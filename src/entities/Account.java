@@ -3,7 +3,7 @@ package entities;
 public class Account {
 
     private int number;
-    private String holder;
+    private Client holder;
     private double balance;
     private double withdrawLimit;
 
@@ -11,7 +11,7 @@ public class Account {
 
     }
 
-    public Account(int number, String holder, double balance, double withdrawLimit) {
+    public Account(int number, Client holder, double balance, double withdrawLimit) {
         this.number = number;
         this.holder = holder;
         this.balance = balance;
@@ -26,11 +26,11 @@ public class Account {
         this.number = number;
     }
 
-    public String getHolder() {
+    public Client getHolder() {
         return holder;
     }
 
-    public void setHolder(String holder) {
+    public void setHolder(Client holder) {
         this.holder = holder;
     }
 
@@ -46,8 +46,11 @@ public class Account {
         this.withdrawLimit = withdrawLimit;
     }
 
-    public void deposit(Double value){
-        balance += value;
+    public void deposit(Double amount){
+        if (amount <= 0) {
+            throw new RuntimeException("Deposit error: Amount must be positive.");
+        }
+        balance += amount;
     }
 
     public void withdraw(double amount){
