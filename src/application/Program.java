@@ -35,7 +35,7 @@ public class Program {
         char resp = 'y';
 
         while (resp == 'y'){
-            System.out.print("Choose option: deposit(D) or withdrawal(W): ");
+            System.out.print("Choose option: deposit(D) or withdrawal(W) or status(S): ");
             char option = sc.next().charAt(0);
             if (option=='D' || option == 'd'){
                 System.out.print("Enter amount for deposit: ");
@@ -47,7 +47,7 @@ public class Program {
                 } catch (RuntimeException e) {
                     System.out.println(e.getMessage());
                 }
-            } else {
+            } else if (option == 'W' || option == 'w'){
                 System.out.print("Enter amount for withdraw: ");
                 double amount = sc.nextDouble();
 
@@ -58,7 +58,15 @@ public class Program {
                 } catch (RuntimeException e) {
                     System.out.println(e.getMessage());
                 }
+            }else if (option == 's' || option=='S'){
+                System.out.println("\n--- ACCOUNT STATUS ---");
+                System.out.println(client.toString());
+                System.out.printf("Current Balance: $%.2f%n", acc.getBalance());
+                System.out.printf("Withdraw Limit: $%.2f%n", acc.getWithdrawLimit());
+            }else {
+                System.out.println("Invalid option!");
             }
+            System.out.println();
             System.out.print("Do you want to perform another operation? (y/n): ");
             resp = sc.next().charAt(0);
         }

@@ -38,6 +38,6 @@ public class Client {
 
     @Override
     public String toString(){
-       return  " TaxId: " + getTaxId() +", Name: " + getName() + ", Email: " + getEmail();
+       return  "TaxId: " + getTaxId() +", Name: " + getName() + ", Email: " + getEmail();
     }
 }
