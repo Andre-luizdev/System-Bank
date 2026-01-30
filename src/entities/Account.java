@@ -54,9 +54,6 @@ public class Account {
     }
 
     public void withdraw(double amount){
-        if(amount>withdrawLimit){
-            throw new RuntimeException("Withdrawal error: The amount exceeds the withdrawal limit.");
-        }
         if (amount>balance){
             throw new RuntimeException("Withdrawal error: Insufficient balance.");
         }
@@ -64,5 +61,10 @@ public class Account {
 
     }
 
+    public void targetAcc(double amount){
+        if( number != number){
+            amount+=balance;
+        }
+    }
 
 }

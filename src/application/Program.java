@@ -1,7 +1,9 @@
 package application;
 
 import entities.Account;
+import entities.Bank;
 import entities.Client;
+import services.RegisterService;
 
 import java.util.Locale;
 import java.util.Scanner;
@@ -11,67 +13,94 @@ public class Program {
         Locale.setDefault(Locale.US);
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Enter account data");
-        System.out.print("Number: ");
-        int number = sc.nextInt();
-        sc.nextLine();
-        System.out.print("Holder: ");
-        String holder = sc.nextLine();
-        System.out.print("TaxId: ");
-        int taxId = sc.nextInt();
-        sc.nextLine();
-        System.out.print("Email: ");
-        String email = sc.nextLine();
-        System.out.print("Initial balance: ");
-        double balance = sc.nextDouble();
-        System.out.print("WithdrawLimit: ");
-        double withdrawLimit = sc.nextDouble();
+        Bank bank = new Bank();
 
-        Client client = new Client(holder, taxId, email);
-        Account acc = new Account(number, client, balance, withdrawLimit);
+        Account acc = null;
 
-        System.out.println();
+        int masterOption = 0;
 
-        char resp = 'y';
-
-        while (resp == 'y'){
-            System.out.print("Choose option: deposit(D) or withdrawal(W) or status(S): ");
-            char option = sc.next().charAt(0);
-            if (option=='D' || option == 'd'){
-                System.out.print("Enter amount for deposit: ");
-                double amount = sc.nextDouble();
-                try {
-                    acc.deposit(amount);
-                    System.out.println("Account Owner Data: " + client.toString());
-                    System.out.printf("New balance: %.2f%n", acc.getBalance());
-                } catch (RuntimeException e) {
-                    System.out.println(e.getMessage());
-                }
-            } else if (option == 'W' || option == 'w'){
-                System.out.print("Enter amount for withdraw: ");
-                double amount = sc.nextDouble();
-
-                try {
-                    acc.withdraw(amount);
-                    System.out.println("Account Owner Data: " + client.toString());
-                    System.out.printf("New balance: %.2f%n", acc.getBalance());
-                } catch (RuntimeException e) {
-                    System.out.println(e.getMessage());
-                }
-            }else if (option == 's' || option=='S'){
-                System.out.println("\n--- ACCOUNT STATUS ---");
-                System.out.println(client.toString());
-                System.out.printf("Current Balance: $%.2f%n", acc.getBalance());
-                System.out.printf("Withdraw Limit: $%.2f%n", acc.getWithdrawLimit());
-            }else {
-                System.out.println("Invalid option!");
-            }
+        while (masterOption != 3) {
             System.out.println();
-            System.out.print("Do you want to perform another operation? (y/n): ");
-            resp = sc.next().charAt(0);
+            System.out.println("--- GLOBAL BANK SYSTEM ---");
+            System.out.println("1 - Register");
+            System.out.println("2 - Login");
+            System.out.println("3 - Exit");
+            masterOption = sc.nextInt();
+            if (masterOption == 1) {
+                acc = RegisterService.createAccount(sc);
+                bank.addAccount(acc);
+            } else if (masterOption == 2) {
+                System.out.print("Digite o numero da conta: ");
+                int num = sc.nextInt();
+                acc = bank.findAccount(num);
+                if (acc == null) {
+                    System.out.println("Account not found!");
+                }
+
+            } if (masterOption != 3 && acc != null) {
+                char resp = 'y';
+
+                while (resp == 'y') {
+                    System.out.print("Choose option: deposit(D) or withdrawal(W) or status(S) or transfer(T) ");
+                    char option = sc.next().charAt(0);
+                    if (option == 'D' || option == 'd') {
+                        System.out.print("Enter amount for deposit: ");
+                        double amount = sc.nextDouble();
+                        try {
+                            acc.deposit(amount);
+                            System.out.println("Account Owner Data: " + acc.getHolder().toString());
+                            System.out.printf("New balance: %.2f%n", acc.getBalance());
+                        } catch (RuntimeException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    } else if (option == 'W' || option == 'w') {
+                        System.out.print("Enter amount for withdraw: ");
+                        double amount = sc.nextDouble();
+
+                        try {
+                            acc.withdraw(amount);
+                            System.out.println("Account Owner Data: " + acc.getHolder().toString());
+                            System.out.printf("New balance: %.2f%n", acc.getBalance());
+                        } catch (RuntimeException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    } else if (option == 's' || option == 'S') {
+                        System.out.println("\n--- ACCOUNT STATUS ---");
+                        System.out.println(acc.getHolder().toString());
+                        System.out.printf("Current Balance: $%.2f%n", acc.getBalance());
+
+                    } else if (option == 'T' || option == 't') {
+
+                        System.out.println();
+                        System.out.println("Provide the account to be deposited into");
+                        int acc1 = sc.nextInt();
+                        Account destinationAccont = bank.findAccount(acc1);
+                        System.out.println("Destination account " + destinationAccont.getHolder().getName());
+                        if(destinationAccont != null && destinationAccont != acc){
+                            try {
+                                System.out.print("Enter amount to transfer: ");
+                                double amount = sc.nextDouble();
+                                acc.withdraw(amount);
+                                destinationAccont.deposit(amount);
+                                System.out.println("Transfer successful!");
+                            }catch (RuntimeException e){
+                                System.out.println("Erro na transferência: " + e.getMessage());
+                            }
+                        }
+
+                    }
+
+                    System.out.println();
+                    System.out.print("Do you want to perform another operation? (y/n): ");
+                    resp = sc.next().charAt(0);
+                }
+                acc = null;
+            }
+
         }
-
         System.out.println("Thank you for using our bank!");
-
+        sc.close();
     }
 }
+
+
